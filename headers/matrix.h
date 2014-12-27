@@ -15,7 +15,7 @@ Matrix *mCreateByArray2(int row, int column, const double array[][3]);
 //matrix functions
 Matrix *mTranspose(const Matrix *mat);
 Matrix *mMultiply(const Matrix *mat1, const Matrix *mat2);
-void mMultiply1(const Matrix *mat1, const Matrix *mat2,Matrix *ret);
+void mMultiply1(const Matrix *mat1, const Matrix *mat2, Matrix *ret);
 
 
 //determinant functions

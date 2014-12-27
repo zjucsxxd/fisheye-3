@@ -57,10 +57,10 @@ void mWarp(const ClImage* srcImage, ClImage* dstImage,const Matrix * warpMat,int
     int newX,newY;
     int dstmidX, dstmidY;
     int srcmidX,srcmidY;
-    Matrix * srcP = NULL ,* dstP = NULL;
+    //Matrix * srcP = NULL ,* dstP = NULL;
 
-    srcP = mCreateByValue(3,1,1);  //像素点初始位置
-    dstP = mCreateByValue(3,1,1);  //变换后的位置
+    Matrix *srcP = mCreateByValue(3,1,1.0);  //像素点初始位置
+    Matrix *dstP = mCreateByValue(3,1,1.0);  //变换后的位置
 
     dstmidX = height/2, dstmidY = width/2;
     srcmidX = srcImage->height/2, srcmidY = srcImage->width/2;
@@ -71,12 +71,14 @@ void mWarp(const ClImage* srcImage, ClImage* dstImage,const Matrix * warpMat,int
 	    double w,a,b,c,d;
 	    double r,R,nx=i,ny=j;
 
-	    /*
 	    r = Dis(nx,ny, dstmidX, dstmidY);
 	    R = calcF2(r);
 	    nx = (nx-dstmidX)*R/r + dstmidX; //鱼眼矫正点
 	    ny = (ny-dstmidY)*R/r + dstmidY;
-	    */
+
+
+	    //printf("%lf %lf %lf %lf\n", r, R, nx, ny);
+
 
 	    if(v==0 && nx>300) continue;
 	    if(v==1 && ny<380) continue;
@@ -87,6 +89,11 @@ void mWarp(const ClImage* srcImage, ClImage* dstImage,const Matrix * warpMat,int
 	    srcP->data[0][0]=ny;   
 	    srcP->data[1][0]=nx;
 	    mMultiply1(warpMat, srcP,dstP);  //通过变换矩阵的乘法，求得变换后位置
+	    /*
+	    mShowMatrix(srcP);
+	    mShowMatrix(warpMat);
+	    mShowMatrix(dstP);
+	    */
 	    if(sig(dstP->data[2][0])==0 ) continue;
 	    ny=dstP->data[0][0]/dstP->data[2][0] ;   //视角转换点
 	    nx=dstP->data[1][0]/dstP->data[2][0] ;
@@ -98,11 +105,19 @@ void mWarp(const ClImage* srcImage, ClImage* dstImage,const Matrix * warpMat,int
 	    nx = (nx-dstmidX)*R/r + srcmidX; //鱼眼矫正点
 	    ny = (ny-dstmidY)*R/r + srcmidY;
 
+	    //printf("%lf %lf %lf %lf\n", r, R, nx, ny);
+
 	    if(sig(nx)<0 || sig(ny-80)<0 || sig(nx- srcImage->height +1)>=0 || sig(ny- srcImage->width+1+80)>=0) continue;
 	    newX=(int) nx;   
 	    newY=(int) ny;
+
+	    //printf("%d %d\n", newX, newY);
+
 	    a=(nx-newX)*(ny-newY);  b=(newX+1-nx)*(ny-newY);
 	    c=(nx-newX)*(newY+1-ny);d=(newX+1-nx)*(newY+1-ny);
+
+	    //printf("%lf %lf %lf %lf\n", a, b, c, d);
+	    //return ;
 
 	    for ( k = 0; k< 3;k ++)//像素迁移
 	    {           
